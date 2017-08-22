@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>webcam testing</title>
+    <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<div>
+    <button class="start">Start</button>
+    <button class="stop">Stop</button>
+</div>
+<video autoplay id="vid" style="display:none;" height="720" width="1280"></video>
+<div class="container">
+    <canvas id="canvas" width="640" height="480"></canvas>
+</div>
+<div class="container">
+    <canvas id="canvas2" width="640" height="480"></canvas>
+</div>
+<script src="js/bower_components/jquery/dist/jquery.js"></script>
+<script src="js/lib/capture.js" type="text/javascript"></script>
+<script src="js/lib/imageprocessor.js" type="text/javascript"></script>
+<script>
+    $(document).ready(function () {
+        console.log("document loaded");
+        var capture = new CamCapture();
+        //capture.addProcessor(new ImageProcessor().toGrey);
+        capture.addProcessor(new ImageProcessor().toRed);
+
+        $(".start").click(function () {
+            capture.start();
+        });
+        $(".stop").click(function () {
+            capture.stop();
+        });
+    });
+</script>
+</body>
+</html>
