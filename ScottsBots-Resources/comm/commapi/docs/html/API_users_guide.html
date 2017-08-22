@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=iso-8859-1">
+  <meta name="GENERATOR"
+ content="Microsoft FrontPage 5.0">
+  <title>Java(tm) Communications API Users Guide</title>
+</head>
+<body bgcolor="#ffffff">
+<!-- @(#)API_users_guide.html   1.11 97/12/15 -->
+<center>
+<h1>Java(tm) Communications API Users Guide</h1>
+<i>Version 3.0<br>
+</i>
+<p><a href="../license.txt">License</a>
+</p>
+</center>
+<p>This document provides an overview of the components of the Java(tm)
+communications
+API, which is a standard extension to the Java platform. It is not a
+tutorial;
+readers should know the basics of serial and parallel port programming,
+and be comfortable reading the Java communications API <a
+ href="../index.html">reference
+pages</a>.
+</p>
+<p>Like all Java standard extensions, the Java communications API is
+intended to be implementable from specification by third parties.
+</p>
+<p></p>
+<hr>
+<h2><tt>javax.comm</tt> Extension Package</h2>
+<p>There are three levels of classes in the Java communications API:
+</p>
+<ul>
+  <li>High-level classes like <tt>CommPortIdentifier</tt> and <tt>CommPort</tt>
+manage access and ownership of communication ports.</li>
+  <li>Low-level classes like <tt>SerialPort</tt> and <tt>ParallelPort</tt>
+provide
+an interface to physical communications ports. The current release of
+the
+Java communications API enables access to serial (RS-232) and
+parallel (IEEE 1284) ports.</li>
+  <li>Driver-level classes provide an interface between the low-level
+classes
+and the underlying operating system. Driver-level classes are part of
+the
+implementation but not the Java communications API. They should
+not be used by application programmers.</li>
+</ul>
+The <tt>javax.comm</tt> package provides the following basic services:
+<ul>
+  <li>Enumerate the available ports on the system. The static method <tt>CommPortIdentifier.getPortIdentifiers</tt>
+returns an enumeration object that contains a <tt>CommPortIdentifier</tt>
+object for each available port. This <tt>CommPortIdentifier</tt>
+object
+is the central mechanism for controlling access to a communications
+port.</li>
+  <li>Open and claim ownership of communications ports by using the
+high
+level
+methods in their <tt>CommPortIdentifier</tt> objects.</li>
+  <li>Resolve port ownership contention between multiple Java
+applications.
+Events
+are propagated to notify interested applications of ownership
+contention
+and allow the port's owner to relinquish ownership. <tt>PortInUseException</tt>
+is thrown when an application fails to open the port.</li>
+  <li>Perform asynchronous and synchronous I/O on communications ports.
+Low-level
+classes like <tt>SerialPort</tt> and <tt>ParallelPort</tt> have
+methods
+for managing I/O on communications ports.</li>
+  <li>Receive events describing communication port state changes. For
+example,
+when a serial port has a state change for Carrier Detect, Ring
+Indicator,
+DTR, etc. the <tt>SerialPort</tt> object propagates a <tt>SerialPortEvent</tt>
+that describes the state change.</li>
+</ul>
+<h2>
+A Simple Reading Example</h2>
+<tt><a href="../../examples/Simple/SimpleRead.java">SimpleRead.java</a></tt>
+opens
+a serial port and creates a thread for asynchronously reading data
+through
+an event callback technique.
+<h2>A Simple Writing Example</h2>
+<tt><a href="../../examples/Simple/SimpleWrite.java">SimpleWrite.java</a></tt>
+opens a serial port for writing data.
+<h2>Solaris Notes</h2>
+<p>Here's how to test the <tt>SimpleRead.java</tt> example above on
+Solaris:
+</p>
+<ol>
+  <li>Attach a null-modem cable between two serial ports.</li>
+  <li>Start <tt>tip</tt>(1) on one of the serial ports:</li>
+  <pre>% tip -9600 /dev/term/b</pre>
+  <li>Compile <tt>SimpleRead.java</tt>:</li>
+  <pre>% javac SimpleRead.java</pre>
+  <li>Run <tt>SimpleRead</tt>:</li>
+  <pre>% java -native SimpleRead</pre>
+  <li>Type text into the <tt>tip</tt>(1) window.</li>
+</ol>
+<h2>Linux Notes</h2>
+<p>Here's how to test the <tt>SimpleRead.java</tt> example above on Linux: </p>
+<ol>
+  <li>Attach a null-modem cable between two serial ports.</li>
+  <li>Start minicom(1) and setup the proper SerialPort:
+  <pre>$minicom -s</pre>
+  </li>
+  <li>
+  <pre>Restart minicom</pre>
+  </li>
+</ol>
+<pre>     $minicom</pre>
+<p>&nbsp;&nbsp;&nbsp; 4.&nbsp;&nbsp; Compile <tt>SimpleRead.java</tt>: </p>
+<pre>     $javac SimpleRead.java</pre>
+<p>&nbsp;&nbsp;&nbsp; 5.&nbsp;&nbsp; Run <tt>SimpleRead</tt>: </p>
+<pre>     $java SimpleRead</pre>
+<p>&nbsp;&nbsp;&nbsp; 6.&nbsp;&nbsp; Type text into the minicom(1) window.</p>
+<hr>
+<font size="1">Copyright &copy; 2003 <a href="http://www.sun.com">Sun
+Microsystems, Inc.</a>
+<br>
+All Rights Reserved.
+</font>
+</body>
+</html>

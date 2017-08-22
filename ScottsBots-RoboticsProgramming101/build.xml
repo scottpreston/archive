@@ -1,0 +1,101 @@
+<project name="ScottsBots-Core" default="package">
+	<property name="build.dir" value="bin" />
+	<property name="source.dir" value="src" />
+	<property name="test.dir" value="test" />
+	<property name="reports" value="reports" />
+	<property name="this.jar.file" value="dist/scottsbots-roboticsprogramming101.jar" />
+
+	<target name="hudson">
+		<mkdir dir="bin" />
+	</target>
+
+	<target name="compile">
+		<echo>Compiling ${ant.project.name}</echo>
+		<javac srcdir="${source.dir}" destdir="${build.dir}">
+			<classpath>
+				<pathelement location="lib/comm.jar" />
+				<pathelement location="lib/jmf.jar" />
+				<pathelement location="lib/mysql-connector-java-5.1.5-bin.jar" />
+				<pathelement location="lib/jsapi.jar" />
+				<pathelement location="lib/freetts.jar" />
+				<pathelement location="lib/freetts-jsapi10.jar" />
+				<pathelement location="lib/cmu_time_awb.jar" />
+				<pathelement location="lib/cmu_us_kal.jar" />
+				<pathelement location="lib/cmudict04.jar" />
+				<pathelement location="lib/cmulex.jar" />
+				<pathelement location="lib/en_us.jar" />
+				<pathelement location="lib/mbrola.jar" />
+				<pathelement location="lib/sphinx4.jar" />
+				<pathelement location="lib/jai_codec.jar" />
+				<pathelement location="lib/jai_core.jar" />
+				<pathelement location="lib/QTJava.zip" />
+				<pathelement location="lib/RXTXcomm.jar" />
+				<pathelement location="lib/v4l4j.jar" />
+
+			</classpath>
+		</javac>
+		<echo>Finished compiling ${ant.project.name}</echo>
+	</target>
+	<target name="package" depends="compile">
+		<echo>Packaging ${ant.project.name}...</echo>
+		<jar destfile="${this.jar.file}" basedir="${build.dir}" update="true">
+			<fileset dir="${source.dir}" />
+		</jar>
+		<echo>Done Packaging ${this.jar.file}...</echo>
+		<zip destfile="dist/scottsbots-core-lib.zip" basedir="lib" />
+		<echo>Done Zipping Libraries...</echo>
+		<zip destfile="dist/scottsbots-core-native-win32.zip" basedir="native/win32" />
+		<echo>Done Zipping Native Code For Win32...</echo>
+		<zip destfile="dist/scottsbots-core-native-ubuntu.zip" basedir="native/ubuntu" />
+		<echo>Done Zipping Native Code For Ubuntu...</echo>
+	</target>
+
+	<target name="test">
+		<javac srcdir="${test.dir}" destdir="${build.dir}">
+			<classpath>
+				<pathelement location="lib/comm.jar" />
+				<pathelement location="lib/jmf.jar" />
+				<pathelement location="lib/mysql-connector-java-5.1.5-bin.jar" />
+				<pathelement location="lib/jsapi.jar" />
+				<pathelement location="lib/freetts.jar" />
+				<pathelement location="lib/freetts-jsapi10.jar" />
+				<pathelement location="lib/cmu_time_awb.jar" />
+				<pathelement location="lib/cmu_us_kal.jar" />
+				<pathelement location="lib/cmudict04.jar" />
+				<pathelement location="lib/cmulex.jar" />
+				<pathelement location="lib/en_us.jar" />
+				<pathelement location="lib/mbrola.jar" />
+				<pathelement location="lib/sphinx4.jar" />
+				<pathelement location="lib/jai_codec.jar" />
+				<pathelement location="lib/jai_core.jar" />
+				<pathelement location="lib/QTJava.zip" />
+				<pathelement location="lib/RXTXcomm.jar" />
+				<pathelement location="lib/v4l4j.jar" />
+				<pathelement location="lib/junit-4.10.jar" />
+			</classpath>
+		</javac>
+		<mkdir dir="${reports}" />
+		<junit printsummary="yes" haltonfailure="yes" showoutput="yes" fork="yes">
+			<formatter type="plain" usefile="false" />
+			<classpath>
+				<pathelement path="${build.dir}" />
+				<fileset dir="lib">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+
+			<batchtest fork="yes" todir="${reports}">
+				<formatter type="plain" />
+				<fileset dir="${test.dir}">
+					<include name="**/*Test*.java" />
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+
+	<target name="clean" description="clean up">
+		<delete dir="${build.dir}" />
+		<mkdir dir="${build.dir}" />
+	</target>
+
+</project>

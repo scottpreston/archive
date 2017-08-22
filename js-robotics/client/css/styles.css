@@ -1,0 +1,19 @@
+body {
+    font-family: arial, helvetica;
+}
+
+canvas {
+    border: 1px solid #ccc;
+    float: left;
+}
+
+.container {
+    width: 650px;
+    float: left;
+    text-align: center;
+    float: left;
+}
+
+.slider {
+    width: 500px;
+}

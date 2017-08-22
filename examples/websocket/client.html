@@ -1,0 +1,13 @@
+<script>
+
+    var websocket = new WebSocket('ws://localhost:3000');
+    websocket.onopen = function (evt) {
+        websocket.send("This Rocks!");
+        websocket.close();
+     }
+    websocket.onmessage = function (evt) {
+        console.log('RESPONSE: ' + evt.data);
+    };
+
+</script>
+Open this page and look at the console.

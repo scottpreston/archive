@@ -1,0 +1,16 @@
+========================================================================
+ CHANGES IN 3.0.1
+========================================================================
+
+  Fixed parsing error in portmap.properties where whitespace wasn't
+  handles correctly.
+
+  Fixed problem parsing classpath to location conf files.
+
+========================================================================
+ CHANGES IN 3.0
+========================================================================
+
+   - Support added for Linux in 3.0 for the Java Desktop System and 
+     Red Hat AS 3.0 Linux platform
+

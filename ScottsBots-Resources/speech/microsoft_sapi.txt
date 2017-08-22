@@ -1,0 +1,5 @@
+You can download Microsoft's SAPI here:
+
+http://www.microsoft.com/downloads/en/details.aspx?FamilyID=5e86ec97-40a7-453f-b0ee-6583171b4530&displaylang=en
+
+If that link does not work, Google "microsoft sapi download".

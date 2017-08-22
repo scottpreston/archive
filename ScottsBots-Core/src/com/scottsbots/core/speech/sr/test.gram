@@ -1,0 +1,12 @@
+#JSGF V1.0;
+
+/**
+ * JSGF Grammar for notepad example
+ */
+
+grammar test;
+
+public <test> = (test);
+public <move> = (move | go);
+public <numbers> = (zero | one | two | three | four | five | six | seven | eight | nine | ten);
+public <exit> = (exit | goodbye | quit | stop);

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="css/styles.css?v=1">
+    <script type="text/javascript" src="js/libs/jquery/jquery-1.9.1.min.js"></script>
+</head>
+<body>
+<h1>JS Robotics Test Page</h1>
+
+<div style="background: #ccc;padding:10px;">
+    <button onclick="feynmanHead.reset()">Reset Head</button>
+</div>
+<hr>
+<div>
+    <div class="container">
+        <h3>Left Eye</h3>
+        <input type="checkbox" value="on" name="trackred_left" id="trackred_left">Track Red
+        <input type="checkbox" value="on" name="followred_left" id="followred_left">Follow Red<br>
+        <canvas id="left_eye" width="640" height="480"></canvas>
+        <br>
+        pan:<input type="range" min="0" max="255" id="slider_pan_left" class="slider"/><span
+            id="pan_left">127</span><br>
+        tilt:<input type="range" min="0" max="255" id="slider_tilt_left" class="slider"/><span id="tilt_left">127</span>
+
+    </div>
+    <div class="container">
+        <h3>Right Eye</h3>
+        <input type="checkbox" value="on" name="trackred_right" id="trackred_right">Track Red
+        <input type="checkbox" value="on" name="followred_right" id="followred_right">Follow Red<br>
+
+        <canvas id="right_eye" width="640" height="480"></canvas>
+        pan:<input type="range" min="0" max="255" id="slider_pan_right" class="slider"/><span
+            id="pan_right">127</span><br>
+        tilt:<input type="range" min="0" max="255" value="115" id="slider_tilt_right" class="slider"/><span
+            id="tilt_right">115</span>
+        <br>
+    </div>
+</div>
+
+<script type="text/javascript" src="js/libs/scottsbots/jsrobotics.js"></script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#slider_pan_left").bind('change', function () {
+            leftEye.pan(this.value);
+            $('#tilt_pan').html(this.value);
+        });
+        $("#slider_tilt_left").bind('change', function () {
+            leftEye.tilt(this.value);
+            $('#tilt_left').html(this.value);
+        });
+        $("#slider_pan_right").bind('change', function () {
+            rightEye.pan(this.value);
+            $('#pan_right').html(this.value);
+        });
+        $("#slider_tilt_right").bind('change', function () {
+            rightEye.tilt(this.value);
+            $('#tilt_right').html(this.value);
+        });
+    });
+
+</script>
+
+</body>
+</html>

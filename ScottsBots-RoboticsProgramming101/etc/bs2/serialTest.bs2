@@ -1,0 +1,39 @@
+'/*
+' * (C) Copyright 2000-2011, by Scott Preston and Preston Research LLC
+' *
+' *  Project Info:  http://www.scottsbots.com
+' *
+' *  This program is free software: you can redistribute it and/or modify
+' *  it under the terms of the GNU General Public License as published by
+' *  the Free Software Foundation, either version 3 of the License, or
+' *  (at your option) any later version.
+' *
+' *  This program is distributed in the hope that it will be useful,
+' *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+' *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' *  GNU General Public License for more details.
+' *
+' *  You should have received a copy of the GNU General Public License
+' *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+' *
+' */
+
+'{$STAMP BS2}
+'{$PORT COM1}
+serialIn     VAR   Byte(2)
+test         VAR   Byte
+main:
+  test = 255
+  serialIn(0) = 0
+  serialIn(1) = 0
+  SERIN 16,16468,1000,main,[STR serialIn\2\"!"]
+  LOOKDOWN serialIn(0),[100,101],test
+  BRANCH test,[test1, test2]
+  PAUSE 5
+  GOTO main
+test1:
+  SEROUT 16,16468,["a"]
+  GOTO main
+test2:
+  SEROUT 16,16468,["b"]
+  GOTO main

@@ -1,0 +1,7 @@
+git clone git@github.com:scottpreston/ginphp.git
+mv ginphp newname
+cd newname
+rm Ðfr .git
+git init .
+git add .
+git commit Ðm 'first commit for new repo.'

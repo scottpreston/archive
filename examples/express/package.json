@@ -1,0 +1,15 @@
+{
+    "name": "express-example",
+    "version": "0.0.1",
+    "description": "this is a simple example for how to use express",
+    "main": "quickstart.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node quickstart.js"
+    },
+    "author": "Scott Preston",
+    "license": "ISC",
+    "dependencies": {
+        "express": "latest"
+    }
+}

@@ -1,0 +1,1 @@
+sudo motion -c c1.conf

@@ -1,0 +1,30 @@
+'/*
+' * (C) Copyright 2000-2011, by Scott Preston and Preston Research LLC
+' *
+' *  Project Info:  http://www.scottsbots.com
+' *
+' *  This program is free software: you can redistribute it and/or modify
+' *  it under the terms of the GNU General Public License as published by
+' *  the Free Software Foundation, either version 3 of the License, or
+' *  (at your option) any later version.
+' *
+' *  This program is distributed in the hope that it will be useful,
+' *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+' *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' *  GNU General Public License for more details.
+' *
+' *  You should have received a copy of the GNU General Public License
+' *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+' *
+' */
+
+convfac       CON   74
+ECHO1         CON   0   
+INIT1         CON   1   
+main:
+  PULSOUT INIT1,5 		
+  PULSIN ECHO1,1,wDist1
+  wDist1=wDist1/convfac
+  SEROUT 16,N9600,[DEC wDist1]
+  PAUSE 1000
+  GOTO main

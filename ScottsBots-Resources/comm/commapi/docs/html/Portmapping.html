@@ -1,0 +1,1285 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+  <title>Portmapping Guide</title>
+</head>
+<body>
+<h1 style="text-align: left;">&nbsp;&nbsp;&nbsp;&nbsp; Java(tm)
+Communications API Portmapping</h1>
+<h1 style="text-align: left;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Version 3.0</h1>
+<div style="text-align: left;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="../license.txt">License<br>
+</a></div>
+<br>
+<hr style="width: 100%; height: 2px;">
+<table style="text-align: left; width: 70%; margin-left: 40px;"
+ border="0" cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">
+      <div style="text-align: justify;"><span
+ style="font-weight: bold; text-decoration: underline;">INTRODUCTION
+TO PORTMAPPING:</span><br>
+      <span style="font-weight: bold;"> </span><br>
+      <span style="font-weight: bold;"> </span> </div>
+      <div style="text-align: justify;">Portmapping configuration
+allows
+administrators to customize how the <small style="font-style: italic;"><span
+ style="font-weight: bold;">CommPortIdentifier</span></small><span
+ style="font-style: italic;"> </span>list is populated, and
+therefore
+which devices
+are available to applications<span style="font-style: italic;">. </span>Through
+the <span style="font-weight: bold;"><span
+ style="color: rgb(51, 102, 102);">portmap.conf</span> </span>file
+the administrator can create descriptive aliases to replace default
+names that are otherwise assigned to ports.&nbsp; Portmapping is an
+implementation specific feature that is not defined in the API.&nbsp;
+Currently this portmapping scheme it is only offered in Sun's
+implementation of javax.comm for Solaris and Linux.&nbsp; It is
+possible that at some point a Java Specification Request (JSR) can be
+created to expand the CommAPI to allow a pluggable portmapping strategy
+in a future release.<br>
+      <br>
+The <span style="font-weight: bold;"><span
+ style="color: rgb(51, 102, 102);">portmap.conf</span></span> file
+consists of lines.&nbsp; Each non-commented line is referred to as a
+portmapping entry. One of the more powerful types of portmapping entry
+is the Automatic
+Logical Name (ALN), which is a shorthand notation used to
+refer to ports on USB-to-Serial converters (AKA 'dongles') that can be
+connected to
+Sun
+Rays to provide them RS-232 interfaces.&nbsp; ALNs allow the
+administrator to refer to a dongle's ports without having to specify
+the filesystem-specific path to
+the device, and without having to create softlinks in the
+filesystem.&nbsp; Besides making configuration much simpler, ALNs also
+make DTU replacement easier.<br>
+      <br>
+Other portmap entries are provided to allow server ports to be
+visible in
+Sun Ray sessions, as by default a Sun Ray can only see ports on
+connected dongles, and only via the port's default name.<br>
+      <br>
+The format of <span
+ style="font-weight: bold; color: rgb(51, 102, 102);">portmap.conf</span>
+has changed substantially in version 3.0.&nbsp; In previous releases,
+the portmapping configuration file was called <span
+ style="font-style: italic;">portmap.properties</span>, however
+starting javax.comm 3.0 it is called <span style="font-style: italic;">portmap.conf</span>.&nbsp;
+All of the previous portmapping
+functionality has been subsumed into the new feature set and is
+now embodied in the <small><a href="#dtu-assigned">DTU Assigned</a></small>
+portmap entry type.<br>
+      <br>
+Each portmap entry type in <span
+ style="font-weight: bold; color: rgb(51, 102, 102);">portmap.conf</span>
+has a <span style="font-style: italic;">disposition</span>, <span
+ style="font-style: italic;">syntax</span>
+and <span style="font-style: italic;">privilege</span>.&nbsp;
+These qualities describe
+how a portmap entry is identified, under which circumstances such an
+entry will be
+active, and when the represented port is visible to the
+application.&nbsp; Generally when a portmap entry is active (ie. meets
+all criteria to enable it), the alias
+provided for the represented port will be offered in the port list
+instead of a physical path or default name
+for the port.<br>
+      <br>
+There are two broad catagories of portmap file entries:&nbsp; <span
+ style="font-style: italic;">session dependent</span>, and <span
+ style="font-style: italic;">session independent</span>.&nbsp;
+These refer to whether a rule applies to a Sun Ray sessions or
+not. Session dependent entries are active only if the javax.comm JVM is
+running in a SunRay session, otherwise session independent entries are
+activated.&nbsp; Therefore, if javax.comm is not running in a Sun Ray
+environment,&nbsp; <span style="font-style: italic;">session
+dependent</span>
+entries have no function. <br>
+      <br>
+The following types of processes are <span style="font-style: italic;">not</span>
+considered Sun Ray sessions:&nbsp; <br>
+      <ul>
+        <li>&nbsp;&nbsp;&nbsp; Processes running as daemons<br>
+        </li>
+        <li>&nbsp;&nbsp;&nbsp; Processes logged into the system console</li>
+        <li>&nbsp;&nbsp;&nbsp; Processes logged in via ssh, rsh, or
+telnet.</li>
+      </ul>
+      </div>
+      <br>
+      <br>
+      <span style="font-weight: bold; text-decoration: underline;">DEFAULT
+BEHAVIOR:</span><br style="font-weight: bold;">
+      <br>
+      <div style="text-align: justify;">If <span
+ style="font-weight: bold; color: rgb(51, 102, 102);">portmap.conf</span>
+is
+not present, cannot be located, is empty, or contains unusable
+information, javax.comm uses
+a default portmapping strategy.&nbsp; Default behavior differs
+depending upon whether javax.comm<span style="font-style: italic;"> </span>is
+run in a Sun Ray session or not.&nbsp; If the JVM is running outside of
+a Sun Ray session, the locations searched for comm. port devices are
+specified in the platform-specific <span
+ style="font-style: italic; text-decoration: underline;">javax.comm.properties</span>
+file.&nbsp; That required configuration file is distributed with
+defaults port paths setup to locate commonly used ports for the
+represented platform.&nbsp; (This is a new feature in the Sun
+distribution as of javax.comm 3.0).<br>
+      <br>
+      <small><span style="font-weight: bold;">&nbsp;Note:</span> <span
+ style="font-style: italic;">See the comments in <span
+ style="text-decoration: underline;">javax.comm.properties</span>
+file if you need to modify, add or delete port paths to javax.comm for
+any reason</span>.&nbsp; <br>
+      </small><br>
+Default behavior when the JVM is running in a Sun Ray session is to
+list
+all the ports on all dongles attached to the current Sun Ray.<br>
+      <br>
+      <small style="font-weight: bold;"><span
+ style="text-decoration: underline;">Default Port Names:</span><br>
+      <br>
+      </small>If no portmap entry exists to override the default name
+assigned to ports, the default name is used.&nbsp; Default port names
+are the names given to CommPortIdentifiers, and are created differently
+by javax.comm depending on whether the port is on the server chassis
+(or serial port expansion card plugged into a server bus), or if
+the port is on a dongle attached to a Sun Ray.&nbsp;&nbsp; The default
+name used for server ports is the full device path to the port device
+node.&nbsp; The name
+given to Sun Ray dongle ports is the final namespace element in the
+dongle
+device path, which is typically the dongle's vendor name as
+represented to the filesystem by the dongle driver.<br>
+      <br>
+      </div>
+      <br>
+      <span style="font-weight: bold; text-decoration: underline;">LOCATING
+portmap.conf:</span><br>
+      <span style="font-weight: bold;"> </span><br>
+      <div style="text-align: justify;">When the <small
+ style="font-style: italic;"><span
+ style="color: rgb(51, 0, 51); font-weight: bold;">CommPortIdentifiers.getPortIdentifiers()</span></small>
+method is initially invoked by the application, javax.comm
+first attempts to locate and parse a file called <span
+ style="font-weight: bold;"><span style="color: rgb(51, 102, 102);">portmap.conf</span>
+.</span><br>
+      <small><span style="font-weight: bold;"><br>
+&nbsp;Note:</span><span style="font-style: italic;">&nbsp; In previous
+releases <span style="text-decoration: underline;">portmap.conf</span>
+was called <span style="text-decoration: underline;">portmap.properties</span></span></small><span
+ style="font-weight: bold;"><small>.&nbsp; <br>
+      </small></span><br>
+An example of this <span
+ style="font-weight: bold; color: rgb(51, 102, 102);">portmap.conf</span>
+can be found <a href="../portmap.conf_example.txt">here</a><br>
+      <br>
+      <div style="margin-left: 40px;">In javax.comm 3.0 the following
+search order is used to locate <span
+ style="font-weight: bold; color: rgb(51, 102, 102);">portmap.conf</span>
+(If the search fails,<br>
+default portmapping is used):<br>
+      <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1.&nbsp; Current directory.&nbsp; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2.&nbsp; Each directory in ${java.classpath}&nbsp;&nbsp; (ie.&nbsp;
+$CLASSPATH or -classpath setting).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3.
+&lt;java installation dir&gt;/lib.&nbsp; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4.
+&lt;java installation dir&gt;/jre/lib.&nbsp; <br>
+      <br>
+NOTE: &lt;java installation dir&gt; refers to the directory the JVM is
+launched from.&nbsp; <br>
+It is not necessarily the value of $JAVA_HOME.<br>
+      <br>
+      </div>
+      </div>
+      <br>
+      <span style="font-weight: bold; text-decoration: underline;">PARSING
+portmap.conf:</span><br>
+      <span style="font-weight: bold;"> </span><br>
+      <span style="font-weight: bold;"> </span>If <span
+ style="font-weight: bold; color: rgb(51, 102, 102);">portmap.conf</span>
+is located, it's contents will modify portmapping
+behavior accordingly.&nbsp; During parsing of <span
+ style="font-weight: bold; color: rgb(51, 102, 102);">portmap.conf</span><span
+ style="font-style: italic;">, </span>any text that is commented with
+'#' is
+ignored.&nbsp; A comment begins as soon as a '#' character is
+encountered and remains in effect until the end of the
+line.&nbsp; Blank lines are ignored.<br>
+      <br>
+This document describes the format and action of each type of portmap
+entry
+allowed.&nbsp; Parsing errors
+are not displayed by default.&nbsp; Each rejected line in<span
+ style="font-style: italic;"> </span><span
+ style="font-weight: bold; color: rgb(51, 102, 102);">portmap.conf</span><span
+ style="font-style: italic;"> </span>is
+silently discarded, unless the administrator enables the debugging
+option to log
+portmap parsing errors.<br>
+&nbsp; <br>
+Please see this usage <span style="text-decoration: underline;"><a
+ href="../pdf/Portmapping_Example.pdf">example</a></span> <small><span
+ style="font-style: italic;">(PDF)</span></small> of portmap.conf for
+more information.<br>
+      <span style="font-weight: bold;"><br>
+      <a name="debuggin" style="text-decoration: underline;"></a><span
+ style="text-decoration: underline;">DEBUGGING the portmapping
+configuration file:</span><br>
+      </span><br>
+The debug_portmap
+property is used to enable logging of <span
+ style="font-weight: bold; color: rgb(51, 102, 102);">portmap.conf</span>
+errors when launching the JVM.<br>
+      <br>
+Example:&nbsp; $ java&nbsp; -Ddebug_portmap&nbsp;
+myTargetApplicationClassFile<br>
+      <br>
+When debug_portmap is enabled, portmapping errors and portmap path
+translation during <small style="font-style: italic;"><span
+ style="font-weight: bold;">CommPort.open()</span></small>
+are displayed on <span style="font-style: italic;">stderr</span>.&nbsp;
+An even more informative dump is enabled
+with <span style="font-style: italic;">-Ddebug_portmap=all</span>,
+which additionally displays how successfully parsed entries were
+interpreted. <br>
+      <br>
+      <br>
+      <span style="font-weight: bold; text-decoration: underline;"><a
+ name="ALN"></a>ALNs
+(Automatic Logical Names):</span><br>
+      <span style="font-weight: bold;"> </span><br>
+The purpose of an ALN is to be able to refer to a port on a dongle
+without the application or administrator ever needing to know the
+device path in the
+filesystem.&nbsp; ALNs are designed to greatly simplify configuration,
+and make Sun Ray (DTU) replacement
+very easy.&nbsp; When ALNs are used, all that is required to swap out a
+DTU is to update the Terminal ID in
+the corresponding&nbsp;<small> <a href="#dtu-alias">DTU Alias</a></small>&nbsp;
+entry in <span style="font-weight: bold; color: rgb(51, 102, 102);">portmap.conf</span>.<br>
+      <br>
+ALNs are automatic in the sense that they are automatically translated
+into the full path of the of dongle port by javax.comm<span
+ style="font-style: italic;"> </span>when
+when&nbsp; <small><span style="font-weight: bold;"><span
+ style="font-style: italic;">getCommPortIdentifer()</span>&nbsp; </span>or<span
+ style="font-weight: bold;">&nbsp; </span></small><small
+ style="font-style: italic;"><span style="font-weight: bold;">getCommPortIdentifiers()</span></small>&nbsp;
+are called.&nbsp;&nbsp; <span
+ style="font-weight: bold; color: rgb(51, 102, 102);">portmap.conf</span>
+is loaded only once and parsed when javax.comm is loaded.&nbsp; If <span
+ style="font-weight: bold; color: rgb(51, 102, 102);">portmap.conf</span>
+is modified, the JVM must be re-started for the changes to take effect.<br>
+      <br>
+      <div style="margin-left: 40px;">Examples of ALNs:<br>
+      <br>
+      <small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span
+ style="font-style: italic;">utcom1 &nbsp; &nbsp;&nbsp; </span>-
+Refers to the first serial port on the target dongle.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span
+ style="font-style: italic;">utcom2&nbsp;&nbsp; &nbsp;&nbsp; </span>-
+Refers to the 2nd serial port on the target dongle.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span
+ style="font-style: italic;">utcom</span>&lt;<span
+ style="font-style: italic;">n</span>&gt; - Refers to
+the nth serial port on the target dongle.<br>
+      <br>
+      <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span
+ style="font-style: italic;">utprt1</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+- Refers to the first parallel port on the target dongle.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span
+ style="font-style: italic;">utprt2</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+- Refers to the 2nd parallel port on the target dongle.<br>
+      </small> </div>
+      <div style="margin-left: 40px;"><small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span
+ style="font-style: italic;">utprt&lt;n&gt;</span>&nbsp;&nbsp;&nbsp; -
+Refers to
+the nth parallel port on the target dongle.<br>
+      <br>
+      </small> <br>
+      </div>
+      <div style="margin-left: 40px;">See <a href="#session-local-aln">Session
+Local ALN</a> and <a href="#dtu-specific-aln">DTU Specific ALN</a><span
+ style="font-style: italic;"> </span>for more
+information on ALNS.&nbsp; <br>
+      </div>
+      <br>
+      <br>
+      <span style="font-weight: bold; text-decoration: underline;">Summary
+of portmap.conf entry
+types:</span><br>
+      <br>
+      <table cellpadding="2" cellspacing="2" border="0"
+ style="text-align: left; margin-left: auto; margin-right: auto; width: 90%;">
+        <tbody>
+          <tr>
+            <td
+ style="vertical-align: top; width: 30%; background-color: rgb(204, 204, 255);"><a
+ href="#path-alias">Path
+Alias</a></td>
+            <td
+ style="vertical-align: top; background-color: rgb(187, 187, 255);">Create
+an a descriptive
+name (alias) for a port
+path.<br>
+            </td>
+          </tr>
+          <tr>
+            <td
+ style="vertical-align: top; width: 30%; background-color: rgb(204, 204, 255);"><a
+ href="#dtu-alias">DTU
+Alias</a></td>
+            <td
+ style="vertical-align: top; background-color: rgb(187, 187, 255);">Name
+a DTU&nbsp; (ie.
+assign a name to a Sun Ray Terminal ID).<br>
+            </td>
+          </tr>
+          <tr>
+            <td
+ style="vertical-align: top; width: 30%; background-color: rgb(204, 204, 255);"><a
+ href="#dtu-assigned">DTU
+Assigned</a></td>
+            <td
+ style="vertical-align: top; background-color: rgb(187, 187, 255);">Make
+a
+server port available to a particular Sun Ray DTU.<br>
+            </td>
+          </tr>
+          <tr>
+            <td
+ style="vertical-align: top; width: 30%; background-color: rgb(204, 204, 255);"><a
+ href="#globally-visible">Globally
+Visible</a><br>
+            </td>
+            <td
+ style="vertical-align: top; background-color: rgb(187, 187, 255);">Make
+a workstation or
+server port available to all Sun Ray DTUs.<br>
+            </td>
+          </tr>
+          <tr>
+            <td
+ style="vertical-align: top; width: 30%; background-color: rgb(204, 204, 255);"><a
+ href="#session-local-aln">Session
+Local ALN</a></td>
+            <td
+ style="vertical-align: top; background-color: rgb(187, 187, 255);">Refer
+to port on a dongle connected to session's <span
+ style="font-style: italic;">current</span>
+DTU. </td>
+          </tr>
+          <tr>
+            <td
+ style="vertical-align: top; width: 30%; background-color: rgb(204, 204, 255);"><a
+ href="#dtu-specific-aln">DTU
+Specific ALN</a></td>
+            <td
+ style="vertical-align: top; background-color: rgb(187, 187, 255);">Refer
+to port on a dongle connected to <span style="font-style: italic;">arbitrary</span>
+DTU. </td>
+          </tr>
+          <tr>
+            <td
+ style="vertical-align: top; width: 30%; background-color: rgb(204, 204, 255);"><a
+ href="#hidden">Hidden</a></td>
+            <td
+ style="vertical-align: top; background-color: rgb(187, 187, 255);">Omit
+a path from commPort
+identifier list. </td>
+          </tr>
+        </tbody>
+      </table>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<big><b><small><br>
+<br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="dtu-alias"></a>DTU
+alias&nbsp; -&nbsp; </small></b><span
+ style="font-weight: bold; color: rgb(102, 51, 102);">Assign
+alias to a Sun Ray DTU</span><br
+ style="font-weight: bold; color: rgb(102, 51, 102);">
+<small style="text-decoration: underline;"><br>
+</small></big>
+<table style="text-align: left; width: 70%; margin-left: 40px;"
+ border="1" cellspacing="2" cellpadding="10">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; text-align: right; color: rgb(0, 0, 0); background-color: rgb(170, 187, 153); width: 20%;">Syntax:
+      <br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(153, 170, 187);"><small><i
+ style="color: rgb(51, 0, 51);"><span style="font-weight: bold;">&lt;alias&gt;</span></i><span
+ style="font-weight: bold; color: rgb(51, 0, 51);">&nbsp;
+=&nbsp; </span></small><i style="color: rgb(51, 0, 51);"><small><span
+ style="font-weight: bold;">&lt;Terminal ID&gt;</span>&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>
+      <span style="font-weight: bold;">&lt;alias&gt;&nbsp; =&nbsp;
+&lt;DTU Mac
+Addr&gt;</span></small><br>
+      </i> </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; text-align: right; color: rgb(0, 0, 0); background-color: rgb(170, 187, 153); width: 20%;">Disposition:
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(153, 170, 187);">Session
+Independent<br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; text-align: right; color: rgb(0, 0, 0); background-color: rgb(170, 187, 153); width: 20%;">Privilege:
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(153, 170, 187);">None
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; text-align: right; color: rgb(0, 0, 0); background-color: rgb(170, 187, 153); width: 20%;">Examples:
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(153, 170, 187);"><small><big>Teller1
+&nbsp; =&nbsp;&nbsp;
+02:5f:39:93:ab:92</big></small><br>
+      <small><big>Kiosk&nbsp; &nbsp;&nbsp; =&nbsp;&nbsp;
+IEEE802.5abc2309fc29<br>
+      </big></small> </td>
+    </tr>
+  </tbody>
+</table>
+<b><small><big></big></small></b>
+<table cellpadding="30" cellspacing="2" border="1"
+ style="text-align: left; width: 70%; margin-left: 40px; color: rgb(51, 255, 51);">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(221, 204, 153);"><br>
+      <span style="color: rgb(0, 0, 0);"> </span>
+      <div style="color: rgb(0, 0, 0);">A DTU must be given a name
+in order to
+make reference it in <span
+ style="font-weight: bold; color: rgb(51, 102, 102);">portmap.conf</span>,
+and after the alias is assigned, all references to th Sun Ray DTU must
+thereafter made using its alias.&nbsp; <br>
+&nbsp; <br>
+The
+reason for thes restriction is to enforce the policy of clarity,
+simplicity and ease of DTU replacement.<br>
+      <br>
+      <span style="font-weight: bold;"><small
+ style="text-decoration: underline;">DERIVING TERMINAL ID:</small></span><br>
+      <span style="font-weight: bold;"> </span><br>
+      </div>
+      <div style="margin-left: 40px; color: rgb(0, 0, 0);"><small><big><span
+ style="font-style: italic; text-decoration: underline;">Chord method</span>:</big></small><br>
+      <small><big> </big></small><br>
+      <small><big>The easiest way to
+derive the MAC address of a Sun Ray DTU, which&nbsp; is used on Sun Ray
+to form the terminal ID, is to press the 'chord' (three
+buttons)
+simultaneously. The 'chord' is comprised of the leftmost three buttons
+in a row of four
+buttons <span style="font-style: italic;">above </span>the numeric
+keypad.&nbsp; These three buttons are mute, volume +, and volume -,</big></small><small><big>
+respectively&nbsp; (each has an icon of a
+speaker device).</big></small><br>
+      <small><big> </big></small><br>
+      <small><big> <span
+ style="font-style: italic; text-decoration: underline;">Directory
+lookup method</span>:</big></small><br>
+      <small><big> </big></small><br>
+      <small><big>An alternative way to determine the MAC address of a
+DTU is to login on
+the DTU and type at the shell prompt echo $DISPLAY (using only the part
+of the
+number that precedes the dot.&nbsp; For example DISPLAY = :21.0 meands
+the display
+number is '21'.&nbsp; Assuming the display number is 21, the following
+will
+display the terminal ID:</big></small><br>
+      <small><big> </big></small><br>
+      <small><big>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; % ls -l
+/tmp/SUNWut/sessions/21/unit</big></small><br>
+      <small><big> </big></small><br>
+      <small><big> </big> <big>This will display a link to a path
+whose final path element is the
+DTU terminal ID</big></small><small> </small></div>
+      <blockquote style="margin-left: 120px;"> </blockquote>
+      <div style="margin-left: 80px;"> </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<b><small><big><br>
+<br>
+<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a name="dtu-assigned"></a></big></small></b><b><small><big>DTU
+Assigned&nbsp; </big></small></b><b><small><big>-&nbsp; </big></small></b><big
+ style="font-weight: bold; color: rgb(102, 51, 102);">Bind
+server side port to a
+particular DTU</big><br>
+<br>
+<table
+ style="text-align: left; height: 208px; width: 70%; margin-left: 40px;"
+ border="1" cellspacing="2" cellpadding="10">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; text-align: right; color: rgb(0, 0, 0); background-color: rgb(170, 187, 153); width: 20%;">Syntax:
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(153, 170, 187);"><small><span
+ style="font-style: italic; font-weight: bold;">&lt;alias&gt; = <a
+ href="#dtu-alias">DTU Alias</a> : &lt;physical path</span><span
+ style="font-weight: bold;"> <span style="font-style: italic;">to
+server port</span>&gt;</span></small><i style="color: rgb(51, 0, 51);">
+      </i> </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; text-align: right; color: rgb(0, 0, 0); background-color: rgb(170, 187, 153); width: 20%;">Disposition:
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(153, 170, 187);">Session
+Dependent<br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; text-align: right; color: rgb(0, 0, 0); background-color: rgb(170, 187, 153); width: 20%;">Privilege:
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(153, 170, 187);">None
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; text-align: right; color: rgb(0, 0, 0); background-color: rgb(170, 187, 153); width: 20%;">Examples:
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(153, 170, 187);"><small><big>Central
+Printer = Joes_SunRay:/dev/term/a</big></small><small><big><br>
+      </big></small> </td>
+    </tr>
+  </tbody>
+</table>
+<table
+ style="text-align: left; height: 208px; width: 70%; margin-left: 40px;"
+ border="1" cellspacing="2" cellpadding="10">
+</table>
+<table
+ style="text-align: left; width: 70%; color: rgb(51, 255, 51); margin-left: 40px;"
+ border="1" cellspacing="2" cellpadding="30">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(221, 204, 153);"><span
+ style="color: rgb(0, 0, 0);">DTU Assigned aliases allow the
+administrator to make a server port to show up in the&nbsp; </span><small
+ style="color: rgb(0, 0, 0); font-style: italic;"><span
+ style="font-weight: bold;">CommPortIdentifier</span></small><span
+ style="color: rgb(0, 0, 0);">
+list of a specific DTU, and <span style="font-style: italic;">only</span>
+on the specified DTU.&nbsp;&nbsp; </span><br
+ style="color: rgb(0, 0, 0);">
+      <span style="color: rgb(0, 0, 0);"><br>
+By default server ports are not available to Sun Ray session.&nbsp; DTU
+Assigned aliases are NOT the recommended method for referring to dongle
+ports as that requires cluttering the environment with device links
+which are difficult to administer and maintain. &nbsp; The preferred
+way to
+configure dongle ports is with </span><a href="#session-local-aln"
+ style="color: rgb(0, 0, 0);">Session Local ALNs</a><span
+ style="color: rgb(0, 0, 0);">,
+and </span><a href="#dtu-specific-aln" style="color: rgb(0, 0, 0);">DTU
+Specific ALNs</a><span style="color: rgb(0, 0, 0);">.</span><br
+ style="color: rgb(0, 0, 0);">
+      <br style="color: rgb(0, 0, 0);">
+      <span style="color: rgb(0, 0, 0);">DTU Assigned aliases
+enable applications
+running on a Sun Rays to access a devices connected to a server port as
+if the devices were
+physically connected to a Sun Ray dongle port.&nbsp;&nbsp; </span><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+<br>
+<b><small><big><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a name="globally-visible"></a></big></small></b><b><small><big>Globally
+Visible&nbsp; </big></small></b><b><small><big>-&nbsp; </big></small></b><small><big><big
+ style="font-weight: bold; color: rgb(102, 51, 102);">Make server side
+port available
+to all DTUs<br>
+</big><span style="text-decoration: underline;"><br>
+</span></big></small>
+<table
+ style="text-align: left; height: 208px; width: 70%; margin-left: 40px;"
+ border="1" cellspacing="2" cellpadding="10">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; text-align: right; color: rgb(0, 0, 0); background-color: rgb(170, 187, 153); width: 20%;">Syntax:
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(153, 170, 187);"><small><span
+ style="font-style: italic; font-weight: bold;">&lt;alias&gt; = * :
+&lt;physical path</span><span style="font-weight: bold;"> <span
+ style="font-style: italic;">to
+server port</span>&gt;</span></small><i style="color: rgb(51, 0, 51);">
+      </i> </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; text-align: right; color: rgb(0, 0, 0); background-color: rgb(170, 187, 153); width: 20%;">Disposition:
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(153, 170, 187);">Session
+Dependent<br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; text-align: right; color: rgb(0, 0, 0); background-color: rgb(170, 187, 153); width: 20%;">Privilege:
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(153, 170, 187);">None
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; text-align: right; color: rgb(0, 0, 0); background-color: rgb(170, 187, 153); width: 20%;">Examples:
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(153, 170, 187);">Central_Logger
+=
+*:/dev/term/a<br>
+shared_printer&nbsp; = *:/dev/ecpp0<small><big><br>
+      </big></small> </td>
+    </tr>
+  </tbody>
+</table>
+<table
+ style="text-align: left; width: 70%; color: rgb(51, 255, 51); margin-left: 40px;"
+ border="1" cellspacing="2" cellpadding="30">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(221, 204, 153);"><span
+ style="color: rgb(0, 0, 0);"><span style="text-decoration: underline;">Globally
+Visible</span> aliases allow the
+administrator to make a server port to show up in the </span><small
+ style="color: rgb(0, 0, 0); font-style: italic;"><span
+ style="font-weight: bold;">CommPortIdentifier</span></small><span
+ style="color: rgb(0, 0, 0);">
+list within sessions running on all Sun Ray DTUs.&nbsp; In all other
+ways, <span style="text-decoration: underline;">Globally Visible</span>
+aliases are identical to <a href="#dtu-assigned">DTU Assigned</a>
+aliases.<br>
+      <br>
+      <span style="text-decoration: underline;">Globally Visible</span>
+aliases are called 'Session Dependent' because, even though they are
+visible to all Sun Ray sessions, the alias is not active unless inside
+a Sun Ray session.&nbsp; To provide an alias that goes into effect for
+a port outside of a Sun Ray session, use a <a href="#path-alias">Path
+Alias</a>.<br>
+      </span><span
+ style="text-decoration: underline; color: rgb(0, 0, 0);"></span></td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+<br>
+<br>
+<b><small><big>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a
+ name="path-alias"></a>Path Alias&nbsp; </big></small></b><b><small><big>-&nbsp;
+</big></small></b><small><big><big
+ style="font-weight: bold; color: rgb(102, 51, 102);">Define
+alias to substitute for pathname reference</big><span
+ style="text-decoration: underline;"><br>
+<br>
+</span></big></small>
+<table
+ style="text-align: left; height: 208px; width: 70%; margin-left: 40px;"
+ border="1" cellspacing="2" cellpadding="10">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; text-align: right; color: rgb(0, 0, 0); background-color: rgb(170, 187, 153); width: 20%;">Syntax:
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(153, 170, 187);"><small
+ style="color: rgb(0, 0, 0);"><i>&lt;<span style="font-weight: bold;">alias&gt;
+      </span></i><span style="font-weight: bold;">= </span><i
+ style="font-weight: bold;">&lt;filesystem path
+to comm. port&gt;</i></small><i style="color: rgb(51, 0, 51);"> </i> </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; text-align: right; color: rgb(0, 0, 0); background-color: rgb(170, 187, 153); width: 20%;">Disposition:
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(153, 170, 187);">Session
+Independent<br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; text-align: right; color: rgb(0, 0, 0); background-color: rgb(170, 187, 153); width: 20%;">Privilege:
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(153, 170, 187);">None
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; text-align: right; color: rgb(0, 0, 0); background-color: rgb(170, 187, 153); width: 20%;">Examples:
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(153, 170, 187);">Central_Logger
+= /dev/term/a<br>
+shared_printer&nbsp; = /dev/ecpp0<br>
+      <small><big><br>
+      </big></small> </td>
+    </tr>
+  </tbody>
+</table>
+<table
+ style="text-align: left; width: 70%; color: rgb(51, 255, 51); margin-left: 40px;"
+ border="1" cellspacing="2" cellpadding="30">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(221, 204, 153);"><span
+ style="text-decoration: underline; color: rgb(0, 0, 0);">Path Aliases</span><span
+ style="color: rgb(0, 0, 0);">
+allows descriptive
+names to be
+given to device paths that </span><span style="color: rgb(0, 0, 0);">javax.comm</span><span
+ style="color: rgb(0, 0, 0);">
+locates during its default device search.&nbsp; The alias is offered in
+lieu of the path
+name, and applies only to applications running on a&nbsp; workstation
+or server.&nbsp; They Path Aliases do not appear in Sun Ray
+sessions.&nbsp; The
+proper way to use an alias to be seen in a Sun
+Ray session is with a <a href="#dtu-assigned">DTU Assigned</a> entry
+or a <a href="#globally-visible"><span
+ style="text-decoration: underline;">Globally Visible</span></a>
+entry.&nbsp; <br>
+      <br>
+A Path Alias cannot be used to refer to arbitrary devices. The
+mechanism used to define new devices for javax.comm to be aware of
+is by
+adding them to the <span style="font-style: italic;">javax.comm.properties</span>
+file.&nbsp; The format of that file is described in the comments of the
+one that comes with the distribution.</span><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<b><small><big><br>
+<br>
+<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a name="hidden"></a> Hidden</big></small></b><span
+ style="font-style: italic;">&nbsp;&nbsp; </span><b><small><big>-&nbsp;
+</big></small></b><small><big><big style="color: rgb(102, 51, 102);"><span
+ style="font-weight: bold;">Omit port path from
+CommPortIdentifier list</span></big><span
+ style="text-decoration: underline;"><br>
+<br>
+</span></big></small>
+<table cellpadding="10" cellspacing="2" border="1"
+ style="text-align: left; height: 208px; width: 70%; margin-left: 40px;">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; text-align: right; color: rgb(0, 0, 0); background-color: rgb(170, 187, 153); width: 20%;">Syntax:
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(153, 170, 187);"><small
+ style="color: rgb(0, 0, 0);"><span
+ style="font-style: italic; font-weight: bold;">[hide]&nbsp;&nbsp;
+&lt;filesystem path to comm. port&gt;</span></small><br>
+      <i style="color: rgb(51, 0, 51);"> </i> </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; text-align: right; color: rgb(0, 0, 0); background-color: rgb(170, 187, 153); width: 20%;">Disposition:
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(153, 170, 187);">Session
+Independent<br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; text-align: right; color: rgb(0, 0, 0); background-color: rgb(170, 187, 153); width: 20%;">Privilege:
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(153, 170, 187);">None
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; text-align: right; color: rgb(0, 0, 0); background-color: rgb(170, 187, 153); width: 20%;">Examples:
+      <br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(153, 170, 187);"><small><big>[hide]
+/dev/term/a<br>
+[hide] /dev/cua/b</big></small><small><big><br>
+      </big></small> </td>
+    </tr>
+  </tbody>
+</table>
+<table
+ style="text-align: left; width: 70%; color: rgb(0, 0, 0); margin-left: 40px;"
+ border="1" cellspacing="2" cellpadding="30">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(221, 204, 153);"><span
+ style="text-decoration: underline;">Hidden</span> aliases are
+kept them from appearing in the&nbsp; <span style="font-weight: bold;"><small
+ style="font-style: italic;">CommPortIdentifier</small>&nbsp; </span>list.&nbsp;
+This type of portmap entry is similar to path alias, except that rather
+than providing a different name for a device the device is not
+shown.<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<small><big><span style="text-decoration: underline;"><br>
+</span></big></small><big><b><small>&nbsp;&nbsp;&nbsp; <br>
+<br>
+<br>
+&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; <a name="session-local-aln"></a>
+Session local
+ALN</small></b><b style="color: rgb(51, 102, 102);"><small>&nbsp;&nbsp;
+</small></b>-<small><span style="font-style: italic;">&nbsp; </span></small></big><small><big><big
+ style="color: rgb(102, 51, 102); font-weight: bold;">Assign alias to
+dongle
+port on session's local DTU</big></big></small><big><small><big
+ style="font-weight: bold; color: rgb(102, 51, 102);"></big><span
+ style="text-decoration: underline;"><br>
+<br>
+</span></small></big>
+<table
+ style="text-align: left; height: 208px; width: 70%; margin-left: 40px;"
+ border="1" cellspacing="2" cellpadding="10">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; text-align: right; color: rgb(0, 0, 0); background-color: rgb(170, 187, 153); width: 20%;">Syntax:
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(153, 170, 187);"><small><big
+ style="color: rgb(51, 0, 51);"><i><small><span
+ style="font-weight: bold;"><span style="color: rgb(0, 0, 0);">&lt;alias&gt;
+      </span>= <a href="#ALN">ALN</a> </span><span
+ style="font-weight: bold;"><br>
+      </span></small></i></big></small></td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; text-align: right; color: rgb(0, 0, 0); background-color: rgb(170, 187, 153); width: 20%;"><br>
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(153, 170, 187);">Session
+Dependent<br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; text-align: right; color: rgb(0, 0, 0); background-color: rgb(170, 187, 153); width: 20%;">Privilege:
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(153, 170, 187);">None
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; text-align: right; color: rgb(0, 0, 0); background-color: rgb(170, 187, 153); width: 20%;">Examples:
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(153, 170, 187);"><small><big>
+      </big></small>local_printer = utprt1<br>
+cashdrawer&nbsp; = utcom1<small><big><br>
+      </big></small> </td>
+    </tr>
+  </tbody>
+</table>
+<table
+ style="text-align: left; width: 70%; color: rgb(51, 255, 51); margin-left: 40px;"
+ border="1" cellspacing="2" cellpadding="30">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(221, 204, 153);"><big
+ style="color: rgb(0, 0, 0);"><small>A <span
+ style="text-decoration: underline;">Session
+Local ALN</span> provides an abbreviated way to access ports on a
+dongle </small></big><big style="color: rgb(0, 0, 0);"><small>connected
+to the local DTU.&nbsp; If the session migrates
+to a new DTU, the ALN will </small></big><big
+ style="color: rgb(0, 0, 0);"><small>refer to the corresponding port on
+the dongle of the new DTU, if any.&nbsp; This eliminates the need</small></big><big
+ style="color: rgb(0, 0, 0);"><small>
+for the administrator to create device links in order to be able to
+access</small></big><big style="color: rgb(0, 0, 0);"><small>
+Sun Ray dongle ports, or have to specify device paths to dongle ports
+in portmap.conf.</small></big><br style="color: rgb(0, 0, 0);">
+      <big style="color: rgb(0, 0, 0);"><small> </small></big> <br>
+      <big style="color: rgb(0, 0, 0);"><small> By connecting
+peripherals to
+dongles consistently among DTUs, the administrator can simplify the
+application.&nbsp; For example, if it is known that a printer is
+physically connected to
+the 1st serial port of the the on each Sun Ray, and a cash drawer on
+the 2nd port, then by assigning corresponding logical names to <small><span
+ style="font-style: italic;">utcom1 </span></small>and <span
+ style="font-style: italic;"><small>utcom2</small>, </span>respectively,
+the
+application can refer to those logical names and know that it is
+communicating with a printer or cash
+drawer without having to consider which Sun Ray the application's Sun
+Ray session is running on.<br>
+      </small></big><br style="color: rgb(0, 0, 0); font-style: italic;">
+      <span style="color: rgb(0, 0, 0);">If a </span><span
+ style="text-decoration: underline; color: rgb(0, 0, 0);">Session Local
+ALN</span><span style="color: rgb(0, 0, 0);"> portmap
+entry refers to a valid port on a supported dongle, the alias appears
+in the port list when&nbsp; </span><small
+ style="color: rgb(0, 0, 0); font-style: italic;"><span
+ style="font-weight: bold;">getCommPortIdentifiers()</span></small>&nbsp;
+      <span style="color: rgb(0, 0, 0);">is called, in place of default
+name of
+the dongle port. <br>
+      <br>
+Each</span><big style="color: rgb(0, 0, 0);"> </big><small
+ style="color: rgb(0, 0, 0);"><big><span
+ style="text-decoration: underline;">Session Local ALN</span></big> </small><span
+ style="color: rgb(0, 0, 0);">is referred to by the administrator
+according to the port it
+represents on the dongle).&nbsp; For example, </span><small
+ style="color: rgb(0, 0, 0);"><span style="font-style: italic;">utcom1</span></small><span
+ style="color: rgb(0, 0, 0);"> refers
+to the 1st
+serial port on the dongle,&nbsp; </span><small
+ style="color: rgb(0, 0, 0);"><span style="font-style: italic;">utcom2</span></small><span
+ style="color: rgb(0, 0, 0);"> refers to the 2nd
+port on the dongle, and so on.&nbsp;&nbsp; Similarly, </span><small
+ style="color: rgb(0, 0, 0);"><span style="font-style: italic;">utprt1</span></small><span
+ style="color: rgb(0, 0, 0);"> refers to the first
+parallel port.</span><br style="color: rgb(0, 0, 0);">
+      <br>
+      <span style="color: rgb(0, 0, 0);">If the ALN port number exceeds
+the number of ports on the first dongle found connected to the DTU,</span><span
+ style="color: rgb(0, 0, 0);"> for example, referring to port #5 on a
+4-port
+dongle, the ALN reference will '</span><a href="#spillover"
+ style="color: rgb(0, 0, 0);">spill over</a><span
+ style="color: rgb(0, 0, 0);">'
+to the next dongle, that is, if
+any other dongle are connected to the Sun
+Ray, and would refer to the first port on the subsequent dongle.&nbsp;
+This is because
+the
+ALN port number reference is really just an index into the list of
+device links in the Sun Ray device directory.</span><span
+ style="color: rgb(0, 0, 0);"><br>
+      </span>
+      <p style="color: rgb(0, 0, 0);"><small><span
+ style="font-weight: bold;">Hotdesking:</span></small><br>
+      </p>
+      <div style="margin-left: 40px; color: rgb(0, 0, 0);"><small><span
+ style="text-decoration: underline;">Session Local
+ALNs</span>&nbsp; always follow the session and are not tied to a
+specific device.&nbsp; <a
+ href="file:///z:/home/pkliss/comm/src/docs/html/Portmapping.html#dtu-specific-aln">DTU
+Specific ALNs</a>
+are used to alternatively refer to dongles on specific DTUS as though
+from a bird's eye view.<br>
+      <br>
+      </small><small>When
+a
+session moves to
+a new DTU (that kind of session migration is known as <span
+ style="font-style: italic;">hotdesking </span>in Sun Ray
+terminology), javax.comm
+throws
+an exception for any ports </small><small>opened on the previous
+DTU.&nbsp;&nbsp; Once the
+session has migrated
+to the new
+DTU, the next time </small><small>comm. ports are enumerated by the
+application, the logical names specificed in those ALN entries in
+portmap.conf will then map to </small><small>corresponding port on the
+dongle on the <span style="font-style: italic;">new</span> DTU, and
+those ports will need to be openned in order to use.<br>
+      </small><br>
+      </div>
+      <p style="color: rgb(0, 0, 0);">There are two types of the
+Session Local ALN, to accommodate different application strategies.<br>
+      <small style="color: rgb(0, 0, 0);"><big><br>
+The alias </big></small><span style="color: rgb(0, 0, 0);">will appear
+in
+the <small><span style="font-style: italic; font-weight: bold;">CommPortIdentifier</span></small>
+list only if the dongle is attached and the port exists at
+the time</span><small style="color: rgb(0, 0, 0);"><span
+ style="font-weight: bold;"><span style="font-style: italic;">
+getCommPortIdentifer()</span> </span>or<span style="font-weight: bold;">
+      <span style="font-style: italic;">getCommPortIdentifiers()</span></span></small><span
+ style="color: rgb(0, 0, 0);">
+are called.&nbsp;&nbsp; </span><span style="color: rgb(0, 0, 0);">Unless
+      </span><a
+ href="file:///z:/net/sunray/import/sunray/javaxcomm/3.0/build/00/dist/solaris/release/commapi/docs/html/Portmapping.html#debuggin"
+ style="color: rgb(0, 0, 0);">debugging</a><span
+ style="color: rgb(0, 0, 0);"> is enabled, such erroneous or
+unresolvable aliases are silently dropped.</span></p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<small><big><span style="text-decoration: underline;"><br>
+<br>
+<br>
+<br>
+</span></big></small><b><small><big>&nbsp; &nbsp; &nbsp; &nbsp; <a
+ name="dtu-specific-aln"></a> DTU-Specific ALN &nbsp;&nbsp; - &nbsp; </big></small></b><small><big><big
+ style="color: rgb(102, 51, 102); font-weight: bold;">Assign alias to a
+dongle
+port on specific DTU<br>
+</big><span style="text-decoration: underline;"><br>
+</span></big></small>
+<table
+ style="text-align: left; height: 208px; width: 70%; margin-left: 40px;"
+ border="1" cellspacing="2" cellpadding="10">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; text-align: right; color: rgb(0, 0, 0); background-color: rgb(170, 187, 153); width: 20%;">Syntax:
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(153, 170, 187);"><small>&lt;<span
+ style="font-style: italic; font-weight: bold;">alias&gt;&nbsp; = <a
+ href="file:///c:/Portmapping.html#dtu-alias">DTU Alias : ALN</a></span><span
+ style="font-style: italic;"></span><span
+ style="font-style: italic; font-weight: bold;"><br>
+      </span></small><small><span
+ style="font-style: italic; font-weight: bold;"><br>
+      </span></small><small><small>&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp;&nbsp;<big> <span
+ style="font-weight: bold;">Note</span>:&nbsp; <big>The syntax of
+this </big></big></small><big>entry looks similar to the <a
+ href="file:///c:/Portmapping.html#dtu-assigned"><small><span
+ style="text-decoration: underline;">DTU Assigned</span></small></a>
+alias,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+but</big></small> each serves an entirely different
+purpose. &nbsp; This type of definition <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+refers to Sun Ray dongle ports and always ends
+in&nbsp;<small><span style="font-style: italic;"> utcom1, utcom2, utprt1</span></small>,
+      <span style="font-style: italic;">etc..</span>.&nbsp; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+A DTU Assigned alias always ends in a device path, such as <small><span
+ style="font-style: italic;">/dev/term/a</span></small>.<br>
+      <br>
+      <i style="color: rgb(51, 0, 51);"> </i> </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; text-align: right; color: rgb(0, 0, 0); background-color: rgb(170, 187, 153); width: 20%;">Disposition:
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(153, 170, 187);">Session
+Independent<br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; text-align: right; color: rgb(0, 0, 0); background-color: rgb(170, 187, 153); width: 20%;">Privilege:
+      </td>
+      <td
+ style="vertical-align: top; background-color: rgb(153, 170, 187);">root<br>
+      </td>
+    </tr>
+    <tr>
+      <td
+ style="vertical-align: top; text-align: right; color: rgb(0, 0, 0); background-color: rgb(170, 187, 153); width: 20%;"><br>
+Examples: </td>
+      <td
+ style="vertical-align: top; background-color: rgb(153, 170, 187);"><small><big><br>
+      </big></small><small><big>hallway_printer&nbsp;&nbsp;
+=&nbsp;
+hallway_dtu:utprt2<br>
+      </big></small> <small><big>retina_scanner&nbsp;&nbsp;&nbsp;
+=&nbsp;
+entrance:utcom1<br>
+      </big></small><small><big><br>
+      </big></small> </td>
+    </tr>
+  </tbody>
+</table>
+<table
+ style="text-align: left; width: 70%; color: rgb(51, 255, 51); margin-left: 40px;"
+ border="1" cellspacing="2" cellpadding="30">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; background-color: rgb(221, 204, 153);">
+      <p> </p>
+      <span style="color: rgb(0, 0, 0);">The purpose of the <span
+ style="text-decoration: underline;">DTU
+Specific ALN</span> is to access a dongle port on an arbitrary</span><span
+ style="color: rgb(0, 0, 0);"> Sun Ray DTU, without the administrator
+needing to know, nor having directly refer to the the dongle port's
+filesystem device
+path.&nbsp; Root privilege is required to view ports on other
+DTUs.&nbsp; Without root privilege, Sun Ray devices is only accessible
+from sessions running on the DTUs devices are locally attached to.</span><span
+ style="color: rgb(0, 0, 0);"><span style="text-decoration: underline;">&nbsp;
+DTU Specific ALNs</span> are
+provided primarily to provide a means for daemons (running as </span><span
+ style="color: rgb(0, 0, 0);">root) to be able access devices on any
+Sun Ray, requiring minimal configuration</span><span
+ style="color: rgb(0, 0, 0);"> effort.</span><br
+ style="color: rgb(0, 0, 0);">
+      <br style="color: rgb(0, 0, 0);">
+      <span style="color: rgb(0, 0, 0);"><span
+ style="text-decoration: underline;">A DTU Specific ALN</span> is used
+to make</span><span style="color: rgb(0, 0, 0);"> a static reference to
+a particular serial port on a specific Sun
+Ray, regardless of whether javax.comm is run from</span><span
+ style="color: rgb(0, 0, 0);"> inside or outside of a session.&nbsp; In
+contrast, <a href="#session-local-aln"><span
+ style="text-decoration: underline;">Session
+Local ALNs</span></a></span><span style="color: rgb(0, 0, 0);"> <span
+ style="font-style: italic;">always
+      </span>refer to the local DTU.<br>
+      <br>
+      </span><small style="color: rgb(0, 0, 0);"><big>The alias </big></small><span
+ style="color: rgb(0, 0, 0);">will appear in the <small><span
+ style="font-style: italic; font-weight: bold;">CommPortIdentifier</span></small>
+list only if the the target DTU is online and available, there is a
+compatible dongle is attached to the DTU, and the specified port is
+present on the dongle at the time</span><small
+ style="color: rgb(0, 0, 0);"><span style="font-weight: bold;"><span
+ style="font-style: italic;">
+getCommPortIdentifer()</span> </span>or<span style="font-weight: bold;">
+      <span style="font-style: italic;">getCommPortIdentifiers()</span></span></small><span
+ style="color: rgb(0, 0, 0);">
+are called.&nbsp;&nbsp; </span><span style="color: rgb(0, 0, 0);">Unless
+      </span><a
+ href="file:///z:/net/sunray/import/sunray/javaxcomm/3.0/build/00/dist/solaris/release/commapi/docs/html/Portmapping.html#debuggin"
+ style="color: rgb(0, 0, 0);">debugging</a><span
+ style="color: rgb(0, 0, 0);"> is enabled, erroneous or
+unresolvable ALN aliases are silently dropped.</span><br>
+      <div style="margin-left: 40px;"><br>
+      </div>
+      <span style="color: rgb(0, 0, 0);"></span><br
+ style="color: rgb(0, 0, 0);">
+      <a name="spillover" style="color: rgb(0, 0, 0);"></a><span
+ style="color: rgb(0, 0, 0);"><span style="font-weight: bold;">ALN
+spillover</span>:</span><br style="color: rgb(0, 0, 0);">
+      <br style="color: rgb(0, 0, 0);">
+      <span style="color: rgb(0, 0, 0);"> Intuitively<span
+ style="font-style: italic;"><span style="font-style: italic;">, </span><small>utcom3</small>
+      </span>is not a valid
+specifier for a dongle with only 2 serial ports.&nbsp; On a dongle
+with</span><span style="color: rgb(0, 0, 0);"> two ports,&nbsp; only <span
+ style="font-style: italic;"><small>utcom1</small> </span>and <span
+ style="font-style: italic;"><small>utcom2</small> </span>are
+valid.&nbsp; <br>
+      <br>
+&nbsp;If a
+dongle has two ports, a reference</span><span
+ style="color: rgb(0, 0, 0);"> to <span style="font-style: italic;"><small>utcom3&nbsp;
+      </small> </span>'spills over'
+to the next dongle if another dongle is attached to the DTU.&nbsp; That
+is, if there are subsequent dongles attached, thst spillover will refer
+to the first available port on the subsequent dongle.</span><span
+ style="color: rgb(0, 0, 0);"> If there are no additional dongles, the
+reference to <small><span style="font-style: italic;">utcom3</span></small>
+is <span style="font-style: italic;">silently
+      </span>discarded as an error.&nbsp;
+Consider a case where two </span><span style="color: rgb(0, 0, 0);">2-port
+dongles are attached to one Sun Ray; <small><span
+ style="font-style: italic;">utcom4</span></small>
+would
+refer to the 2nd port </span><span style="color: rgb(0, 0, 0);">on the
+2nd dongle.&nbsp; The problem with using 'spill over' is in determining
+which
+dongle is dongle 1, and which is </span><span
+ style="color: rgb(0, 0, 0);">dongle 2, as the order of enumeration is
+not obvious unless the USB connector and hub enumeration order is
+carefully analyzed by the administrator.&nbsp; For that reason, and the
+fact that unwary user's might move the USB conectors, the
+multi-dongle per DTU scenario is probably best avoided.</span><br
+ style="color: rgb(0, 0, 0);">
+      <br style="color: rgb(0, 0, 0);">
+      <span style="color: rgb(0, 0, 0);">ALNs work by indexing into the
+list of files in the Sun Ray device directories.&nbsp; The order in
+which
+the dongles are listed is based on
+dongle </span><span style="color: rgb(0, 0, 0);">type and to which USB
+ports/hubs the dongles are connected.&nbsp; Therefore, the
+easiest way
+to </span><span style="color: rgb(0, 0, 0);">guarantee a 1:1 mapping
+between ALNs and dongle ports, is to ensure that one dongle </span><span
+ style="color: rgb(0, 0, 0);">is ever attached to a given DTU and that
+the dongle has sufficient number
+of ports.&nbsp; In
+other words, if 4
+ports are </span><span style="color: rgb(0, 0, 0);">needed,
+get a 4-port dongle;&nbsp; if 7-ports are needed, use an 8-port
+dongle.&nbsp;&nbsp; If multiple dongles are used, great care needs to
+be taken to
+determine the enumeration order and keep the hardware and <span
+ style="font-weight: bold; color: rgb(51, 102, 102);">portmap.conf</span>
+file in sync with one another.&nbsp; Therefore multiple dongles per DTU
+is not in the spirit of
+ALNs.</span><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<small><big><span style="text-decoration: underline;"><br>
+</span></big></small>
+</body>
+</html>

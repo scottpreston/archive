@@ -1,0 +1,98 @@
+========================================================================
+ CHANGES IN 3.0.1
+========================================================================
+
+  Added support for Solaris x86 platform.
+
+  Fixed parsing error in portmap.properties where whitespace wasn't
+  handles correctly.
+
+  Fixed problem parsing classpath to location conf files.
+
+========================================================================
+ CHANGES IN 3.0
+========================================================================
+  
+   General
+     - Improved portmapping substantially
+     - Renamed portmap.properties to portmap.conf
+     - Added server-side port search path properties to javax.comm.properties
+     - Provided new documentation explaining portmapping
+     - Improved runtime error messages
+
+   Sun Ray:
+     - Added "automatic" server-side and DTU-specific logical names 
+
+
+
+   Bugs Fixed:
+
+   Bug Id  Synopsis
+   ------- ----------------------------------
+
+
+
+
+========================================================================
+ CHANGES IN 2.0.3
+========================================================================
+
+   Solaris:
+      - Change the default build java version from jdk1.1.8 to java1.2.
+
+   Sun Ray:
+      - No longer uses the Auth Mgr
+      - No longer accesses $UTDEVROOT directly, uses libutsession.so
+
+
+
+   Bugs Fixed:
+
+   Bug Id  Synopsis
+   ------- -----------------------------------
+   4445759 Doesn't re-enumerate each time getCommPortIdentifiers() called
+   4414176 100% CPU use of comm API 2.0.2
+   4412884 Open followed by close results in 100% cpu usage
+   4445761 Must propagate errors when SunRay Hotdesk events occur
+   4454642 PDASync fails in MultiHead environment
+   4452073 PDASync says "port in use by another application"
+
+
+
+
+========================================================================
+ CHANGES IN 2.0.2 
+========================================================================
+
+   General:
+      - Various documentation errors have been fixed.
+
+
+   Sun Ray:
+      - Added documents to clarify SunRay serial device portmapping.
+
+
+
+   Bugs Fixed:
+ 
+   Bug Id  Synopsis
+   ------- ----------------------------------
+   4192908 Communication via serial port is too slow
+   4202050 Reading closed port shouldn't generate IllegalStateException
+   4203051 Receive timeout is granularity unacceptable
+   4242291 Closing a port can be a suicide call
+   4250828 3x slowdown from javacomm API
+   4260554 javax.comm package : Unable to load javax.comm.properties
+   4283884 OUTPUT_BUFFER_EMPTY Event Not Provided per API
+   4236107 Closing InputStream does not unblock any outstanding reads
+   4241557 serialportevent listeners don't wonk on Solaris
+   4304587 "nWaitForEvent: cond_wait error 4" after 30280 chars xmitd
+   4259571 Doc clarification for :serial ports owner
+   4287685 Constant err nWaitForEvent or cond_wait error 4 in JDK 1.2.
+   4347826 Generates IllegalStaeException instead of IOException
+   4353355 Unable to open Serial Ports through javax.comm
+   4358426 SimpleRead sample program doesn't work on SunRay DTU
+   4353410 ParallelBlackBox coredumps on Sun Ray platform.
+   4359517 SimpleWrite.java writes often truncates data
+   4359844 SimpleWrite' between 2 ports does not write whole string.S
+

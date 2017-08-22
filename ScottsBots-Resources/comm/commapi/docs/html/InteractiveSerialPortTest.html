@@ -1,0 +1,305 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+  <title>ispt</title>
+</head>
+<body>
+<center>
+<div style="text-align: left;"></div>
+<h1 style="text-align: left;"><small><small>&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; Interactive Serial Port Test (ISPT)</small></small><br>
+</h1>
+</center>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;
+&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp; &nbsp;&nbsp; <a href="../../docs/license.txt">License</a><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The distribution bundle includes
+the Interactive Serial Port Test commtest.jar<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ispt is a tool which allows
+interactive text-based access to the serial<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; port, however&nbsp; unsupported
+and the source code is not provided.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ispt allows control over RS-232
+signals and events and access to various API <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; features provided by
+javax.comm.&nbsp; It can be&nbsp; used to help validate comm port<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; configuration and connections and
+send and also send and receive serial data.<br>
+<br>
+&nbsp; &nbsp; &nbsp;&nbsp; At this time the documentation is sparse,
+thus ispt will have to be learned <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; through experimentation, although
+brief usage help is available. &nbsp;&nbsp; After<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; specifying which ports to access,
+the user may type '?' or 'h' at the prompt <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; to get a list of valid commands.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To invoke ispt you must include
+comm.jar and commtest.jar in the class path, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; and the library path must include
+a path to a directory containing <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; libSolarisSerialParallel.so for
+Solaris systems,&nbsp; or libLinuxSerialParallel.so for<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Linux systems.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Example:<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; export
+CLASSPATH=comm.jar:commtest.jar<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; export
+LD_LIBRARY_PATH=/lib:/usr/lib:/usr/local/lib:lib<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $JAVA_HOME/bin/java
+-classpath ${classpath} ispt/ispt<br>
+&nbsp;&nbsp; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(note:&nbsp; in the above example, ./lib should contain <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+libSolarisSerialParallel.so or<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+libLinuxSerialParallel.so).<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ispt will initially list all
+the known available ports (including those configured in <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; portmap.properties if it is
+present).&nbsp; The user must choose one or two<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; of those ports. &nbsp;&nbsp;
+ispt is capable of sending and receiving data <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; on either one or two serial
+ports (the latter configuration facilitates<br>
+&nbsp; &nbsp; &nbsp; &nbsp; loopback testing in which a null modem
+cable is connected between<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; two ports on the same host).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; For single port mode, simply
+enter one item from the list of&nbsp; ports (by number),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; and for dual port mode,
+specify two numbers from the list seperated by a comma<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (as indicated at the
+prompt).&nbsp;&nbsp; The default port can be toggled by typing A
+&lt;return&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; or B &lt;return&gt;.&nbsp;
+Commands can be directed to the first one second user selected<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; port by prefixing a command
+with A or B.&nbsp; For example, 'B write 10' sends a <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sequence of 10 bytes out
+port B.&nbsp; 'A send "hello"'&nbsp; would send the string "hello"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; out port A.&nbsp; <br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; By default Auto-read
+mode is on, meaning that any time data is available<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; on the one or two
+ports specified at the inital prompt, it will be displayed<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; asynchronously.&nbsp;
+If auto-read mode is switched off,&nbsp; data must be explicitly<br>
+&nbsp; &nbsp; &nbsp; &nbsp;&nbsp; read from a port with the 'read'
+command.&nbsp; Examples:&nbsp; 'read 10', or<br>
+&nbsp; &nbsp; &nbsp; &nbsp;&nbsp; 'B read 100'. <br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The following is an example
+of invoking and using ispt (user input is<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; shown in <span
+ style="color: rgb(204, 0, 0);">red</span>).<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+ style="color: rgb(204, 0, 0);">&nbsp; $&nbsp; ./ispt</span><br>
+<div style="margin-left: 40px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br>
+<div style="margin-left: 40px; font-family: monospace;"><font size="-1">Listing
+all known serial ports <br>
+<br>
+&nbsp; 1. SessionIndependent_/dev/term/a<br>
+&nbsp; 2. SessionIndependent_/dev/term/b<br>
+&nbsp; 3. /dev/ecpp0<br>
+&nbsp; 4. Teller1_COM1<br>
+&nbsp; 5. Teller1_COM2<br>
+&nbsp; 6. Admin_COM1<br>
+&nbsp; 7. Admin_COM2<br>
+&nbsp; 8. Admin_COM3<br>
+&nbsp; 9. Admin_COM4<br>
+<br>
+<br>
+Enter port selection or RETURN to exit (&lt;A&gt;[,&lt;B&gt;]): <span
+ style="color: rgb(204, 0, 0);">1</span><br>
+<br>
+[Interactive Port Test for javax.comm]<br>
+<br>
+A: SessionIndependent_/dev/term/a<br>
+<br>
+Enter commands ( 'h' or '?' for help ): <br>
+<br>
+Auto Read Mode Enabled<br>
+<br>
+<span style="color: rgb(204, 0, 0);">h</span><br>
+<br>
+-------------------------------------------------------------------------<br>
+&nbsp;A&nbsp;&nbsp;&nbsp; - set default port to A<br>
+&nbsp;B&nbsp;&nbsp;&nbsp; - set default port to B<br>
+&nbsp;/&nbsp;&nbsp;&nbsp; - cancel I/O operation<br>
+&nbsp;AUTO - toggle auto read mode<br>
+-------------------------------------------------------------------------<br>
+[&lt;port&gt;] write &lt;n&gt; [c*ontiguous]&nbsp;&nbsp; - write n
+bytes to port<br>
+[&lt;port&gt;] send
+"&lt;string&gt;"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+- send string to port (contiguous)<br>
+[&lt;port&gt;] read
+&lt;n&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp;&nbsp; - read n bytes from port<br>
+[&lt;port&gt;] dump
+[&lt;n&gt;]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp; &nbsp; &nbsp; - hexdump [n] bytes from port<br>
+[&lt;port&gt;] timeout [ &lt;n&gt; | disable ]&nbsp; - set/get timeout
+on port<br>
+[&lt;port&gt;] thresh&nbsp; [ &lt;n&gt; | disable ]&nbsp;&nbsp; -
+set/get receive threshold for port<br>
+[&lt;port&gt;] frame [ &lt;n&gt; | none&nbsp;
+]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - set/get framing byte on port<br>
+[&lt;port&gt;]
+avail&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; - display # of
+available bytes<br>
+</font></div>
+</div>
+<p style="margin-left: 80px; font-family: monospace;"><font size="-1">[&lt;port&gt;]
+break
+&lt;n&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+- send break of &lt;n&gt; milliseconds</font></p>
+<div style="margin-left: 80px; font-family: monospace;"><font size="-1"><br>
+[&lt;port&gt;]
+pins&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; - display state of handshake
+pins<br>
+[&lt;port&gt;] dtr [ on | off
+]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp;&nbsp; - set/get state of DTR pin on port<br>
+[&lt;port&gt;] rts [ on | off
+]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp; - set/get state of RTS pin on port<br>
+[&lt;port&gt;]
+dsr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; - get state of DSR pin on port<br>
+[&lt;port&gt;]
+cts&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+- get state of CTS pin on port<br>
+[&lt;port&gt;]
+cd&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+- get state of CD&nbsp; pin on port<br>
+[&lt;port&gt;]
+ri&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+- get state of RI&nbsp; pin on port<br>
+<br>
+[&lt;port&gt;] flow [ hw [ in | out ] ]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -
+set/get hardware flow ctl for port <br>
+[&lt;port&gt;] flow [ sw [ in | out ] ]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -
+set/get software flow ctl for port <br>
+[&lt;port&gt;] flow [ none
+]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+- set/get flow control for port <br>
+<br>
+[&lt;port&gt;] baud
+[&lt;n&gt;]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp; - set/get baud rate on port<br>
+[&lt;port&gt;] ibuf
+[&lt;n&gt;]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp; - set/get input buffer size for port<br>
+[&lt;port&gt;] obuf
+[&lt;n&gt;]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+- set/get output buffer size for port<br>
+<br>
+[&lt;port&gt;] notify
+none&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp;&nbsp; - disable all notifications<br>
+[&lt;port&gt;] notify
+all&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; - enable all
+notifications<br>
+[&lt;port&gt;] notify da &lt; on | off &gt;&nbsp; &nbsp;&nbsp; &nbsp; -
+notify when data available<br>
+[&lt;port&gt;] notify fe &lt; on | off &gt;&nbsp;&nbsp; &nbsp;
+&nbsp;&nbsp; - notify of framing errors<br>
+[&lt;port&gt;] notify cd &lt; on | off
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - notify of cd changes<br>
+[&lt;port&gt;] notify bi &lt; on | off
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - notify of break
+interrupt<br>
+[&lt;port&gt;] notify pe &lt; on | off &gt;&nbsp;&nbsp; &nbsp; &nbsp; -
+notify of parity errors<br>
+[&lt;port&gt;] notify ri &lt; on | off
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - notify of ring
+ind. changes<br>
+[&lt;port&gt;] notify be &lt; on | off
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - notify of output buffer empty<br>
+[&lt;port&gt;] notify oe &lt; on | off
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - notify of overrun errors<br>
+[&lt;port&gt;] notify cts &lt; on | off
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - notify of cts changes<br>
+[&lt;port&gt;] notify dsr &lt; on | off
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - notify of cd changes<br>
+-------------------------------------------------------------------------<br>
+<br>
+Auto Read Mode Enabled<br>
+<br>
+<span style="color: rgb(204, 0, 0);">write 10</span><br>
+[A]&nbsp; Wrote 10 bytes [one at a time]&nbsp;&nbsp;&nbsp;&nbsp; "write
+10"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+OK<br>
+[A]&nbsp; EVENT Output buffer empty<br>
+<br>
+<span style="color: rgb(204, 0, 0);">dtr on</span><br>
+[A]&nbsp; DTR
+&lt;on&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"dtr
+on"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+OK<br>
+<br>
+<span style="color: rgb(204, 0, 0);">baud 9600</span><br>
+[A]&nbsp; Serial parameters: 9600,8,0,1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"baud
+9600"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+OK<br>
+<br>
+<br>
+[A]&nbsp; EVENT Received 16 bytes:<br>
+0000: 41 42 43 44 45 46 47 48&nbsp; 49 4a 4b 4c 4d 4e 4f 50&nbsp;
+ABCDEFGHIJKLMNOP<br>
+<br>
+<br>
+[A]&nbsp; EVENT Received 200 bytes:<br>
+0000: 41 42 43 44 45 46 47 48&nbsp; 49 4a 4b 4c 4d 4e 4f
+50&nbsp;&nbsp;&nbsp; ABCDEFGHIJKLMNOP<br>
+0010: 51 52 53 54 55 56 57 58&nbsp; 59 5a 41 42 43 44 45 46&nbsp;
+QRSTUVWXYZABCDEF<br>
+0020: 47 48 49 4a 4b 4c 4d 4e&nbsp;&nbsp; 4f 50 51 52 53 54 55
+56&nbsp;&nbsp; GHIJKLMNOPQRSTUV<br>
+0030: 57 58 59 5a 41 42 43 44&nbsp; 45 46 47 48 49 4a 4b 4c&nbsp;&nbsp;
+WXYZABCDEFGHIJKL<br>
+0040: 4d 4e 4f 50 51 52 53 54&nbsp;&nbsp; 55 56 57 58 59 5a 41 42&nbsp;
+MNOPQRSTUVWXYZAB<br>
+0050: 43 44 45 46 47 48 49 4a&nbsp; 4b 4c 4d 4e 4f 50 51
+52&nbsp;&nbsp;&nbsp; CDEFGHIJKLMNOPQR<br>
+0060: 53 54 55 56 57 58 59 5a&nbsp; 41 42 43 44 45 46 47 48&nbsp;
+STUVWXYZABCDEFGH<br>
+0070: 49 4a 4b 4c 4d 4e 4f 50&nbsp;&nbsp;&nbsp; 51 52 53 54 55 56 57
+58&nbsp; IJKLMNOPQRSTUVWX<br>
+0080: 59 5a 41 42 43 44 45 46&nbsp; 47 48 49 4a 4b 4c 4d 4e&nbsp;&nbsp;
+YZABCDEFGHIJKLMN<br>
+0090: 4f 50 51 52 53 54 55 56 &nbsp; 57 58 59 5a 41 42 43 44&nbsp;
+OPQRSTUVWXYZABCD<br>
+00a0: 45 46 47 48 49 4a 4b 4c &nbsp; 4d 4e 4f 50 51 52 53 54 &nbsp;
+EFGHIJKLMNOPQRST<br>
+00b0: 55 56 57 58 59 5a 41 42&nbsp; 43 44 45 46 47 48 49 4a&nbsp;
+UVWXYZABCDEFGHIJ<br>
+00c0: 4b 4c 4d 4e 4f 50 51 52&nbsp;&nbsp;&nbsp; --&nbsp; --&nbsp;
+--&nbsp; --&nbsp; --&nbsp; --&nbsp; --&nbsp; --&nbsp; &nbsp;
+&nbsp;&nbsp; KLMNOPQR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>
+<br>
+</font></div>
+<br>
+</body>
+</html>

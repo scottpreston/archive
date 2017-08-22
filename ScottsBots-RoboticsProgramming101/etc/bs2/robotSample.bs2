@@ -1,0 +1,57 @@
+'/*
+' * (C) Copyright 2000-2011, by Scott Preston and Preston Research LLC
+' *
+' *  Project Info:  http://www.scottsbots.com
+' *
+' *  This program is free software: you can redistribute it and/or modify
+' *  it under the terms of the GNU General Public License as published by
+' *  the Free Software Foundation, either version 3 of the License, or
+' *  (at your option) any later version.
+' *
+' *  This program is distributed in the hope that it will be useful,
+' *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+' *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' *  GNU General Public License for more details.
+' *
+' *  You should have received a copy of the GNU General Public License
+' *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+' *
+' */
+
+'{$STAMP BS2}
+'{$PORT COM1}
+serialIn VAR   Byte(2)
+test VAR   Byte
+convfac CON   74
+ECHO1 CON   0   
+INIT1 CON   1
+cin CON   13    
+heading VAR   Word
+  
+main:
+  test = 255
+  serialIn(0) = 0
+  serialIn(1) = 0
+  SERIN 16,16468,1000,main,[STR serialIn\2\"!"]
+  LOOKDOWN serialIn(0),[100,101,103],test
+  BRANCH test,[test1, test2]
+  PAUSE 5
+  GOTO main
+
+compass:
+  PULSIN cin, 1, heading
+  heading = (heading-500)/50
+  SEROUT 16,N9600,[DEC heading]
+  GOTO main
+
+hello:
+  PAUSE 100
+  SEROUT 16,N9600,["hello"]
+  GOTO main	
+
+sonar:
+  PULSOUT INIT1,5 		
+  PULSIN ECHO1,1,wDist1
+  wDist1=wDist1/convfac
+  SEROUT 16,N9600,[DEC wDist1]
+  GOTO main

@@ -1,0 +1,11 @@
+<ivy-module version="2.0">
+    <info organisation="org.apache" module="ScottsBots-Core"/>
+    <dependencies>
+		<dependency org="org.rxtx" name="rxtx" rev="2.1.7"/>
+		<dependency org="junit" name="junit" rev="4.10"/>
+		<dependency org="mysql" name="mysql-connector-java" rev="5.1.21"/>
+		<dependency org="org.mobicents.external.freetts" name="freetts" rev="1.0"/>
+		<dependency org="javax.media" name="jai_core" rev="1.1.3"/>
+		<dependency org="javax.media" name="jmf" rev="2.1.1e"/>
+    </dependencies>
+</ivy-module>
