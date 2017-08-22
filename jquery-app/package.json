@@ -1,0 +1,27 @@
+{
+  "name": "jquery-app",
+  "version": "1.0.0",
+  "description": "generic starter project for a jquery app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/scottpreston/jquery-app.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/scottpreston/jquery-app/issues"
+  },
+  "homepage": "https://github.com/scottpreston/jquery-app#readme",
+  "dependencies": {
+    "bootstrap": "^3.3.7",
+    "http-server": "^0.9.0",
+    "jquery": "^3.1.1"
+  },
+  "scripts" : {
+    "start" : "http-server -o"
+  }
+}
