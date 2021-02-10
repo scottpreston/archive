@@ -1,0 +1,10 @@
+#JSGF V1.0;
+
+/**
+ * JSGF Grammar for notepad example
+ */
+
+grammar notepad;
+
+public <notepad> = (note pad);
+public <exit> = (exit | good bye | quit);

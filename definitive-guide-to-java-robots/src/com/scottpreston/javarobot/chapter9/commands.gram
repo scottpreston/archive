@@ -1,0 +1,11 @@
+#JSGF V1.0;
+
+/**
+ * JSGF Grammar for commands
+ */
+
+grammar commands;
+
+public <move> = (move | go);
+public <numbers> = (zero | one | two | three | four | five | six | seven | eight | nine | ten); 
+public <exit> = (exit | goodbye | quit | stop);
